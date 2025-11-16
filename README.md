@@ -62,7 +62,6 @@ Optimizador completo con detección automática de hardware, múltiples perfiles
 ---
 
 ## 🎮 Menú Principal
-## 🎮 Menú Principal
 
 - **[1] ⚡ Optimización Completa** - Todo en uno (30 mejoras)
 - **[2] 🎮 Optimización Gaming** - Alto rendimiento extremo

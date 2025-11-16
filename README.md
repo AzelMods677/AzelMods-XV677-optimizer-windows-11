@@ -62,26 +62,27 @@ Optimizador completo con detección automática de hardware, múltiples perfiles
 ---
 
 ## 🎮 Menú Principal
-[1] ⚡ Optimización Completa      - Todo en uno (30 mejoras)
-[2] 🎮 Optimización Gaming        - Alto rendimiento extremo
-[3] 🔧 Optimización Básica        - Segura para oficina
-[4] 🗑️  Desinstalar Bloatware     - Apps innecesarias
-[5] 🧹 Limpiar Disco              - Libera espacio
-[6] 🪟 Interfaz Windows 11        - Personalización
-[7] 🔒 Privacidad Máxima          - Anti-telemetría total
-[8] 🌐 Optimización de Red        - Baja latencia gaming
-[9] 🛡️  Seguridad Avanzada        - Protección extra
-[A] 🚀 Optimizar Servicios        - Desactivar innecesarios
-[B] 🔔 Desactivar Notificaciones  - Modo concentración
-[C] ⚙️  Optimizar Arranque        - Startup ultra-rápido
-[D] 💾 Optimizar Almacenamiento   - SSD/HDD específico
-[E] 📊 Análisis de Rendimiento    - Diagnóstico completo
-[F] 🔄 Actualizar Drivers         - Revisar controladores
-[R] 🔄 Restaurar Registro         - Reversión de cambios
-[L] 📋 Ver Log                    - Historial de operaciones
-[I] ℹ️  Info Sistema              - Detalles del PC
-[0] ❌ Salir                       - Cerrar script 
+## 🎮 Menú Principal
 
+- **[1] ⚡ Optimización Completa** - Todo en uno (30 mejoras)
+- **[2] 🎮 Optimización Gaming** - Alto rendimiento extremo
+- **[3] 🔧 Optimización Básica** - Segura para oficina
+- **[4] 🗑️ Desinstalar Bloatware** - Apps innecesarias
+- **[5] 🧹 Limpiar Disco** - Libera espacio
+- **[6] 🪟 Interfaz Windows 11** - Personalización
+- **[7] 🔒 Privacidad Máxima** - Anti-telemetría total
+- **[8] 🌐 Optimización de Red** - Baja latencia gaming
+- **[9] 🛡️ Seguridad Avanzada** - Protección extra
+- **[A] 🚀 Optimizar Servicios** - Desactivar innecesarios
+- **[B] 🔔 Desactivar Notificaciones** - Modo concentración
+- **[C] ⚙️ Optimizar Arranque** - Startup ultra-rápido
+- **[D] 💾 Optimizar Almacenamiento** - SSD/HDD específico
+- **[E] 📊 Análisis de Rendimiento** - Diagnóstico completo
+- **[F] 🔄 Actualizar Drivers** - Revisar controladores
+- **[R] 🔄 Restaurar Registro** - Reversión de cambios
+- **[L] 📋 Ver Log** - Historial de operaciones
+- **[I] ℹ️ Info Sistema** - Detalles del PC
+- **[0] ❌ Salir** - Cerrar script
 ---
 
 ## 🔐 Seguridad

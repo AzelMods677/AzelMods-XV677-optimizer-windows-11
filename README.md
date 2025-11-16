@@ -139,7 +139,7 @@ Este script modifica profundamente el sistema operativo. El autor no se hace res
 
 ## 📞 Soporte
 
-- **YouTube:** `@AGCOMPANY677`
+- **YouTube:** `https://www.youtube.com/@AGCOMPANY677`
 - **Telegram**:https://t.me/AzelModsx67779
 - **Version:** 4.5.0 FINAL
 

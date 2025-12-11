@@ -47,7 +47,7 @@
 |--------|-------------|
 | 1 | Optimización Ultra Completa (45+ mejoras) |
 | 2 | Modo Gaming Extremo (15 tweaks) |
-| 3 | Optimización Básica Segura |
+| 3 | Optimización Básica  |
 | 4-5 | Desinstalar bloatware + limpieza profunda |
 | 6-H | Personalización, red, GPU, energía… |
 | R | Restaurar registro desde backup |
@@ -62,7 +62,6 @@
 - Backups del registro antes de cada sesión.
 - Punto de restauración del sistema creado al inicio.
 - Restauración en **1 clic** desde el menú (opción `R`).
-- No modifica archivos de sistema críticos.
 - Compatible con Windows 11 Home/Pro/Enterprise 22000+.
 
 ---

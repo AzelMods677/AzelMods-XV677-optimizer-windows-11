@@ -1,5 +1,5 @@
-# 🎯 AzelMods XV677 v5.0.0  
-**Windows 11 Ultimate Optimizer – Definitive Edition**
+# 🎯 AzelMods XV677 v5.0.0 – “Definitive Edition”
+**Windows 11 Ultimate Optimizer**
 
 ⚡ Script batch avanzado que aplica **más de 45 optimizaciones reales** a Windows 11 para mejorar rendimiento, gaming, privacidad y estabilidad.  
 ✅ **100 % reversible** con backups automáticos.  
@@ -7,115 +7,71 @@
 
 ---
 
-## 🌟 Características destacadas
-| Categoría        | Optimizaciones incluidas                                                                 |
-|------------------|------------------------------------------------------------------------------------------|
-| 🔧 Rendimiento   | Plan Ultimate Performance, servicios innecesarios desactivados, efectos visuales mínimos |
-| 🎮 Gaming        | Prioridad máxima CPU/GPU, latencia de red &lt; 1 ms, Game DVR desactivado                  |
-| 🔒 Privacidad    | Telemetría desactivada, Cortana/Bing eliminados, rastreo de actividades bloqueado       |
-| 💾 Almacenamiento| TRIM para SSD/NVMe, limpieza de temporales, NTFS optimizado                              |
-| 🔋 Energía       | Perfiles personalizados, hibernación desactivada, Fast Startup opcional                  |
-| 🩺 Seguridad     | Backups automáticos del registro, puntos de restauración, logging completo               |
+## ✨ Novedades clave v5.0.0
+| Característica | Detalle |
+|----------------|---------|
+| 🔍 Hardware auto-detectado | CPU, GPU, RAM, SSD/NVMe/HDD y espacio libre. Las optimizaciones se adaptan en tiempo real. |
+| 🔧 45 tweaks reales | Plan Ultimate Performance, TRIM dinámico, prioridades 8/8 GPU y 6/6 CPU, telemetría y bloatware desactivados, red &lt;1 ms, Game DVR apagado, etc. |
+| 💾 Backups automáticos | Registro completo + punto de restauración antes de tocar nada. |
+| 📝 Logging total | Archivo `AzelMods_Log_YYYYMMDD_HHMMSS.txt` por cada ejecución con contadores de éxito/error. |
+| 🎮 Modo Gaming Extremo | 15 optimizaciones dedicadas: CPU al 100 %, latencia ultra-baja, notificaciones off, Defender en bajo consumo. |
+| 🌈 UX mejorada | Menú ASCII colorido, barra de progreso animada, validación de privilegios y compatibilidad al iniciar. |
+| 🛠️ Utilidades extra | Restaurar registro en 1 clic, reparación SFC+DISM+CHKDSK, mantenimiento mensual, limpieza profunda. |
+| 📞 Soporte actualizado | YouTube [@AzelmodsHackPurgatory](https://www.youtube.com/@AzelmodsHackPurgatory) y Telegram [t.me/AzelModsx67779](https://t.me/AzelModsx67779). |
 
 ---
 
-## 📸 Vista previa
-![Menú principal](assets/screenshots/menu_example.png)
+## 🧪 Rendimiento esperado
+| Escenario | Mejora aprox. |
+|-----------|---------------|
+| FPS en juegos | +10-30 % |
+| Latencia de red | –20-50 ms |
+| Tiempo de carga | –15-25 % |
+| Micro-stuttering | –80 % |
 
 ---
 
-## 📥 Instalación
-1. **Descarga** el archivo `AzelMods_XV677_v5.0.0.bat` desde la última [Release](https://github.com/AzelMods677/AzelMods-XV677-optimizer-windows-11/releases).
-2. **Clic derecho → Ejecutar como administrador**.
-3. **Sigue el menú**: elige entre Ultra Completa, Gaming Extremo, u otras opciones.
-4. **Reinicia** cuando termine para aplicar todos los cambios.
+## 📥 Instalación rápida
+1. Ve a la última [Release](https://github.com/AzelMods677/AzelMods-XV677-optimizer-windows-11/releases/tag/v5.0.0).
+2. Descarga `AzelMods_XV677_v5.0.0.bat`.
+3. Clic derecho → **Ejecutar como administrador**.
+4. Elige modo **Ultra Completa** (recomendado) o **Gaming Extremo**.
+5. Reinicia al terminar para aplicar todos los cambios.
 
 &gt; ⚠️ Requisitos: Windows 11 (Build 22000+), 4 GB RAM mínimo, 100 MB libres en disco.
 
 ---
 
-## 🧰 Menú principal
+## 🧰 Menú principal (resumen)
 | Opción | Descripción |
 |--------|-------------|
-| 1      | Optimización Ultra Completa (45+ mejoras) |
-| 2      | Modo Gaming Extremo (15 tweaks específicos) |
-| 3      | Optimización Básica Segura (conservadora) |
-| 4-5    | Desinstalar bloatware y limpieza profunda |
-| 6-H    | Personalización, red, GPU, energía, etc. |
-| R      | Restaurar registro desde backup |
-| L      | Ver log en tiempo real |
-| X      | Reparar sistema (SFC, DISM, CHKDSK) |
-| M      | Mantenimiento automático mensual |
+| 1 | Optimización Ultra Completa (45+ mejoras) |
+| 2 | Modo Gaming Extremo (15 tweaks) |
+| 3 | Optimización Básica Segura |
+| 4-5 | Desinstalar bloatware + limpieza profunda |
+| 6-H | Personalización, red, GPU, energía… |
+| R | Restaurar registro desde backup |
+| L | Ver log |
+| X | Reparar sistema (SFC/DISM/CHKDSK) |
+| M | Mantenimiento automático mensual |
+| 0 | Salir |
 
 ---
 
-## 🧪 Benchmarks aproximados
-| Juego        | FPS extra | Latencia ↓ | Stuttering ↓ |
-|--------------|-----------|------------|--------------|
-| Valorant     | +25 %     | –30 ms     | –80 %        |
-| Fortnite     | +20 %     | –25 ms     | –75 %        |
-| CS2          | +15 %     | –20 ms     | –70 %        |
-| Apex Legends | +22 %     | –35 ms     | –85 %        |
-
-&gt; Resultados reales pueden variar según hardware y controladores.
+## 🛡️ Seguridad & reversibilidad
+- Backups del registro antes de cada sesión.
+- Punto de restauración del sistema creado al inicio.
+- Restauración en **1 clic** desde el menú (opción `R`).
+- No modifica archivos de sistema críticos.
+- Compatible con Windows 11 Home/Pro/Enterprise 22000+.
 
 ---
 
-## 🛡️ Seguridad y reversibilidad
-- ✅ **Backup automático** del registro antes de cada cambio.
-- ✅ **Punto de restauración** creado al inicio.
-- ✅ **Log detallado** por si necesitas auditoría.
-- ✅ **Restauración en 1 clic** desde el menú → opción `R`.
+## 📞 Soporte & comunidad
+- ▶️ **YouTube**: [@AzelmodsHackPurgatory](https://www.youtube.com/@AzelmodsHackPurgatory)
+- 💬 **Telegram**: [t.me/AzelModsx67779](https://t.me/AzelModsx67779)
+
 
 ---
-
-## 🧑‍💻 ¿Quieres contribuir?
-¡Toda mejora es bienvenida!  
-Lee [CONTRIBUTING.md](docs/CONTRIBUTING.md) y abre un Pull Request.
-
----
-
-## 📋 Licencia
-[MIT License](LICENSE) – usa, copia y modifica libremente; solo conserva los créditos.
-
----
-
-## 📞 Soporte
-- 🎥 [YouTube – AGCOMPANY677](https://www.youtube.com/@AGCOMPANY677)
-- 🐛 Issues aquí en GitHub
-- 💬 Discusiones en la pestaña «Discussions»
-
----
-
-## 📝 Changelog
-Resumen rápido – ver [CHANGELOG.md](docs/CHANGELOG.md) para detalles completos.
-
-| Versión   | Fecha       | Novedades principales |
-|-----------|-------------|------------------------|
-| v5.0.0    | 2025-12-10  | 45 optimizaciones, detección NVMe, modo gaming extremo, logging completo |
-| v4.5.0    | 2025-11-01  | 30 optimizaciones base, menú simple, detección básica |
-
----
-
-**¡Disfruta de tu Windows 11 más rápido, privado y gamer que nunca!**  
-⭐ Si te funciona, deja una estrella ⭐ 
-
-## v5.0.0 – 2025-12-10 “Definitive Edition”
-### ✨ Nuevo
-- Detección automática de hardware (CPU, GPU, RAM, NVMe/SSD/HDD)
-- 15 optimizaciones adicionales (45 vs 30)
-- Modo Gaming Extremo dedicado
-- Logging completo por operación
-- Backups con timestamp
-- Menú mejorado con UX fluida
-
-### 🔧 Mejoras
-- Reescritura de WMIC obsoleto → PowerShell
-- Optimizaciones adaptativas según RAM y tipo de disco
-- Mayor validación de errores
-- Compatible con Windows 11 23H2
-
-### 🐛 Correcciones
-- RAM &gt;32 GB detectada correctamente
-- Timeouts en limpieza de archivos grandes
-- Falsos positivos al desinstalar OneDrive
+## ⭐ ¿Te funciona?
+¡Dejanos una estrella ⭐ y comparte el repo para ayudar a más usuarios!

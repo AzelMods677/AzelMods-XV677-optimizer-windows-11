@@ -1,11 +1,3 @@
-# 🎯 AzelMods XV677 v5.0.0 – “Definitive Edition”
-**Windows 11 Ultimate Optimizer**
-
-⚡ Script batch avanzado que aplica **más de 45 optimizaciones reales** a Windows 11 para mejorar rendimiento, gaming, privacidad y estabilidad.  
-✅ **100 % reversible** con backups automáticos.  
-❤️ Desarrollado por y para la comunidad hispanohablante.
-
----
 
 ## ✨ Novedades clave v5.0.0
 | Característica | Detalle |

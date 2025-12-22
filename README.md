@@ -1,5 +1,4 @@
 # AZELMODS v6.0.0 - ULTIMATE AI EDITION
-### Sistema de Preguntas Frecuentes - MI9 GIDHUD Format
 
 ```
 ╔══════════════════════════════════════════════════════════════════════════════╗

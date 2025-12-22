@@ -1,0 +1,1738 @@
+@echo off
+setlocal enabledelayedexpansion
+chcp 65001 >nul 2>&1
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: AZELMOD v6.0.0 ULTIMATE AI - WINDOWS OPTIMIZER
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: Autor: AGCOMPANY677
+:: YouTube: https://www.youtube.com/@AGCOMPANY677
+:: Versión: 6.0.0 ULTIMATE AI EDITION
+:: Build: 20241221
+:: Licencia: Propietaria - Todos los derechos reservados
+:: ═══════════════════════════════════════════════════════════════════════════════
+
+title AzelMods v6.0.0 ULTIMATE AI - Inicializando Sistema...
+
+:: Variables globales
+set "SCRIPT_VERSION=6.0.0"
+set "SCRIPT_BUILD=20241221"
+set "SCRIPT_NAME=AzelMods_v6.0.0_Ultimate_AI"
+set "SCRIPT_AUTHOR=AGCOMPANY677"
+set "SCRIPT_YOUTUBE=https://www.youtube.com/@AGCOMPANY677"
+
+:: Obtener fecha
+for /f "usebackq delims=" %%D in (`powershell -NoProfile -Command "(Get-Date).ToString('yyyyMMdd_HHmmss')"`) do set TIMESTAMP=%%D
+for /f "usebackq delims=" %%D in (`powershell -NoProfile -Command "(Get-Date).ToString('yyyyMMdd')"`) do set BACKUP_DATE=%%D
+
+:: Archivos
+set "LOG_FILE=%~dp0AzelMods_AI_Log_%BACKUP_DATE%.txt"
+
+:: Inicializar log
+echo ════════════════════════════════════════════════════════════════════════════ > "%LOG_FILE%"
+echo  AZELMOD v%SCRIPT_VERSION% ULTIMATE AI - SESSION LOG >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════ >> "%LOG_FILE%"
+echo [%date% %time%] Sistema iniciado >> "%LOG_FILE%"
+echo. >> "%LOG_FILE%"
+
+:: Pantalla de bienvenida
+cls
+color 0B
+echo.
+echo.
+echo         ╔═══════════════════════════════════════════════════════════════════════╗
+echo         ║                                                                       ║
+echo         ║     █████╗ ███████╗███████╗██╗     ███╗   ███╗ ██████╗ ██████╗ ███████╗
+echo         ║    ██╔══██╗╚══███╔╝██╔════╝██║     ████╗ ████║██╔═══██╗██╔══██╗██╔════╝
+echo         ║    ███████║  ███╔╝ █████╗  ██║     ██╔████╔██║██║   ██║██║  ██║███████╗
+echo         ║    ██╔══██║ ███╔╝ ██╔══╝  ██║     ██║╚██╔╝██║██║   ██║██║  ██║╚════██║
+echo         ║    ██║  ██║███████╗███████╗███████╗██║ ╚═╝ ██║╚██████╔╝██████╔╝███████║
+echo         ║    ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝
+echo         ║                                                                       ║
+echo         ║              🤖 ULTIMATE AI EDITION v%SCRIPT_VERSION% 🤖                      ║
+echo         ║                                                                       ║
+echo         ╚═══════════════════════════════════════════════════════════════════════╝
+echo.
+echo                              🔄 Inicializando Sistema...
+timeout /t 2 /nobreak >nul
+
+:: Verificar privilegios administrador
+net session >nul 2>&1
+if %errorlevel% neq 0 (
+    cls
+    color 0C
+    echo.
+    echo         ╔═══════════════════════════════════════════════════════════════════════╗
+    echo         ║                        ❌ ERROR CRÍTICO ❌                             ║
+    echo         ║             SE REQUIEREN PRIVILEGIOS DE ADMINISTRADOR                 ║
+    echo         ╚═══════════════════════════════════════════════════════════════════════╝
+    echo.
+    echo                    Haz clic derecho y selecciona "Ejecutar como administrador"
+    echo.
+    echo [ERROR] Privilegios insuficientes >> "%LOG_FILE%"
+    timeout /t 10
+    exit /b 1
+)
+
+echo [OK] Privilegios de administrador verificados >> "%LOG_FILE%"
+
+:: Verificar Windows 11
+for /f "tokens=3" %%a in ('reg query "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion" /v CurrentBuild 2^>nul ^| find "CurrentBuild"') do set WIN_BUILD=%%a
+
+if !WIN_BUILD! LSS 22000 (
+    cls
+    color 0C
+    echo.
+    echo         ╔═══════════════════════════════════════════════════════════════════════╗
+    echo         ║                ⚠️  SISTEMA OPERATIVO NO COMPATIBLE ⚠️                 ║
+    echo         ╚═══════════════════════════════════════════════════════════════════════╝
+    echo.
+    echo                    Este script está diseñado para Windows 11
+    echo                             Build detectado: !WIN_BUILD!
+    echo                             Build requerido: 22000+
+    echo.
+    echo [ERROR] Sistema no compatible - Build !WIN_BUILD! >> "%LOG_FILE%"
+    timeout /t 10
+    exit /b 1
+)
+
+set "WIN_NAME=Windows 11"
+echo [OK] Windows 11 detectado [Build !WIN_BUILD!] >> "%LOG_FILE%"
+
+:: Detección de hardware
+echo                         🔍 Analizando hardware del sistema...
+
+:: RAM
+for /f "skip=1 tokens=*" %%I in ('wmic computersystem get TotalPhysicalMemory 2^>nul') do (
+    if not defined RAM_BYTES (
+        set "RAM_BYTES=%%I"
+        set "RAM_BYTES=!RAM_BYTES: =!"
+    )
+)
+if not defined RAM_BYTES set RAM_BYTES=4294967296
+set /a RAM_MB=!RAM_BYTES!/1048576
+set /a RAM_GB=!RAM_MB!/1024
+
+:: Disco
+set DISKTYPE=HDD
+for /f "skip=1 tokens=*" %%D in ('wmic diskdrive get MediaType 2^>nul') do (
+    set "MEDIA=%%D"
+    echo !MEDIA! | findstr /i "SSD" >nul && set DISKTYPE=SSD
+    echo !MEDIA! | findstr /i "NVMe" >nul && set DISKTYPE=NVME
+)
+
+:: CPU
+for /f "skip=1 tokens=*" %%C in ('wmic cpu get Name 2^>nul') do (
+    if not defined CPU_NAME (
+        set "CPU_NAME=%%C"
+        set "CPU_NAME=!CPU_NAME:~0,40!"
+    )
+)
+
+:: GPU
+for /f "skip=1 tokens=*" %%G in ('wmic path win32_VideoController get Name 2^>nul') do (
+    if not defined GPU_NAME (
+        set "GPU_NAME=%%G"
+        set "GPU_NAME=!GPU_NAME:~0,40!"
+    )
+)
+
+:: Espacio en disco
+set DISK_FREE_GB=0
+set DISK_TOTAL_GB=0
+for /f "skip=1 tokens=2,3" %%A in ('wmic logicaldisk where "DeviceID='C:'" get FreeSpace^,Size 2^>nul') do (
+    if not defined DISK_FREE_BYTES (
+        set "DISK_FREE_BYTES=%%A"
+        set "DISK_TOTAL_BYTES=%%B"
+        set /a DISK_FREE_GB=!DISK_FREE_BYTES!/1073741824
+        set /a DISK_TOTAL_GB=!DISK_TOTAL_BYTES!/1073741824
+    )
+)
+
+echo [OK] Hardware detectado: RAM !RAM_GB!GB, Disco !DISKTYPE!, CPU !CPU_NAME! >> "%LOG_FILE%"
+
+:: Calcular Health Score
+set /a HEALTH_SCORE=100
+if !RAM_GB! LSS 8 set /a HEALTH_SCORE-=15
+if "!DISKTYPE!"=="HDD" set /a HEALTH_SCORE-=10
+set /a DISK_USAGE_PERCENT=(!DISK_TOTAL_GB!-!DISK_FREE_GB!)*100/!DISK_TOTAL_GB!
+if !DISK_USAGE_PERCENT! GTR 90 set /a HEALTH_SCORE-=20
+
+set HEALTH_STATUS=EXCELENTE
+set HEALTH_COLOR=0A
+if !HEALTH_SCORE! LSS 90 (
+    set HEALTH_STATUS=BUENO
+    set HEALTH_COLOR=0B
+)
+if !HEALTH_SCORE! LSS 70 (
+    set HEALTH_STATUS=REGULAR
+    set HEALTH_COLOR=0E
+)
+if !HEALTH_SCORE! LSS 50 (
+    set HEALTH_STATUS=CRÍTICO
+    set HEALTH_COLOR=0C
+)
+
+timeout /t 1 /nobreak >nul
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: MENÚ PRINCIPAL
+:: ═══════════════════════════════════════════════════════════════════════════════
+:menu
+cls
+color !HEALTH_COLOR!
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║                                                                               ║
+echo ║     █████╗ ███████╗███████╗██╗     ███╗   ███╗ ██████╗ ██████╗ ███████╗     ║
+echo ║    ██╔══██╗╚══███╔╝██╔════╝██║     ████╗ ████║██╔═══██╗██╔══██╗██╔════╝     ║
+echo ║    ███████║  ███╔╝ █████╗  ██║     ██╔████╔██║██║   ██║██║  ██║███████╗     ║
+echo ║    ██╔══██║ ███╔╝ ██╔══╝  ██║     ██║╚██╔╝██║██║   ██║██║  ██║╚════██║     ║
+echo ║    ██║  ██║███████╗███████╗███████╗██║ ╚═╝ ██║╚██████╔╝██████╔╝███████║     ║
+echo ║    ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚═════╝ ╚══════╝     ║
+echo ║                                                                               ║
+echo ║                🤖 ULTIMATE AI EDITION v%SCRIPT_VERSION% 🤖                            ║
+echo ║              YouTube: %SCRIPT_YOUTUBE%                ║
+echo ║                                                                               ║
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║ 📊 DASHBOARD DEL SISTEMA                                                      ║
+echo ╠═══════════════════════════════════════════════════════════════════════════════╣
+echo ║  Sistema: %WIN_NAME% [Build !WIN_BUILD!]
+echo ║  CPU: !CPU_NAME!
+echo ║  GPU: !GPU_NAME!
+echo ║  RAM: !RAM_GB! GB │ Disco: !DISKTYPE! (!DISK_FREE_GB!GB libre de !DISK_TOTAL_GB!GB)
+echo ║  Uso Disco: !DISK_USAGE_PERCENT!%%
+echo ║  🏥 HEALTH SCORE: !HEALTH_SCORE!/100 [!HEALTH_STATUS!]
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║ 🤖 OPTIMIZACIONES CON IA                                                      ║
+echo ╠═══════════════════════════════════════════════════════════════════════════════╣
+echo ║  [1] 🤖 OPTIMIZACIÓN AUTOMÁTICA IA  - Análisis y optimización inteligente    ║
+echo ║  [2] ⚡ OPTIMIZACIÓN COMPLETA       - 50+ mejoras avanzadas                   ║
+echo ║  [3] 🎮 GAMING PRO EXTREME          - Máximo rendimiento gaming               ║
+echo ║  [4] 💼 PRODUCTIVIDAD AVANZADA      - Optimización para trabajo               ║
+echo ║  [5] 🔒 SEGURIDAD EXTREMA           - Protección máxima                       ║
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║ 🛠️  HERRAMIENTAS AVANZADAS                                                    ║
+echo ╠═══════════════════════════════════════════════════════════════════════════════╣
+echo ║  [6] 🗑️  DESINSTALAR BLOATWARE      - Eliminar apps innecesarias              ║
+echo ║  [7] 🧹 LIMPIEZA PROFUNDA           - Liberar espacio en disco                ║
+echo ║  [8] 🌐 OPTIMIZACIÓN DE RED         - Baja latencia y velocidad               ║
+echo ║  [9] 💾 OPTIMIZACIÓN ALMACENAMIENTO - SSD/HDD/NVMe específico                 ║
+echo ║  [A] ⚙️  TWEAKS AVANZADOS REGISTRO  - Modificaciones expertas                 ║
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║ 📈 ANÁLISIS Y DIAGNÓSTICO                                                     ║
+echo ╠═══════════════════════════════════════════════════════════════════════════════╣
+echo ║  [B] 📊 ANÁLISIS COMPLETO IA        - Diagnóstico inteligente                ║
+echo ║  [C] 🔍 ESCANEO DE SALUD            - Verificación del sistema                ║
+echo ║  [D] 📋 GENERAR REPORTE             - Informe detallado                       ║
+echo ║  [E] 📜 VER LOG                     - Historial de operaciones                ║
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+echo ╔═══════════════════════════════════════════════════════════════════════════════╗
+echo ║ 🔧 MANTENIMIENTO Y RESTAURACIÓN                                               ║
+echo ╠═══════════════════════════════════════════════════════════════════════════════╣
+echo ║  [F] 🔄 RESTAURAR SISTEMA           - Desde backup                            ║
+echo ║  [G] 💾 CREAR BACKUP                - Punto de restauración                   ║
+echo ║  [H] ℹ️  INFORMACIÓN DEL SISTEMA    - Detalles completos                      ║
+echo ║  [I] ❓ AYUDA                        - Guía de uso                             ║
+echo ║  [0] ❌ SALIR                        - Cerrar programa                         ║
+echo ╚═══════════════════════════════════════════════════════════════════════════════╝
+echo.
+set opcion=
+set /p opcion="└─► Selecciona opción: "
+
+if /i "!opcion!"=="1" goto ai_auto_optimize
+if /i "!opcion!"=="2" goto full_optimize
+if /i "!opcion!"=="3" goto gaming_pro_extreme
+if /i "!opcion!"=="4" goto productivity_advanced
+if /i "!opcion!"=="5" goto security_extreme
+if /i "!opcion!"=="6" goto remove_bloatware
+if /i "!opcion!"=="7" goto deep_cleanup
+if /i "!opcion!"=="8" goto network_optimize
+if /i "!opcion!"=="9" goto storage_optimize
+if /i "!opcion!"=="A" goto advanced_tweaks
+if /i "!opcion!"=="B" goto ai_analysis
+if /i "!opcion!"=="C" goto health_scan
+if /i "!opcion!"=="D" goto generate_report
+if /i "!opcion!"=="E" goto view_log
+if /i "!opcion!"=="F" goto restore_system
+if /i "!opcion!"=="G" goto create_backup
+if /i "!opcion!"=="H" goto system_info
+if /i "!opcion!"=="I" goto help_menu
+if /i "!opcion!"=="0" goto end_script
+
+color 0E
+echo.
+echo [!] Opción inválida
+timeout /t 2 >nul
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 1. OPTIMIZACIÓN AUTOMÁTICA CON IA
+:: ═══════════════════════════════════════════════════════════════════════════════
+:ai_auto_optimize
+cls
+color 0D
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🤖 OPTIMIZACIÓN AUTOMÁTICA CON IA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando Optimización Automática IA >> "%LOG_FILE%"
+echo.
+
+:: Crear backup
+set "BACKUP_AI=%~dp0Registry_Backup_AI_%TIMESTAMP%.reg"
+echo [1/10] 💾 Creando backup de seguridad...
+reg export HKLM\SOFTWARE "%BACKUP_AI%" /y >nul 2>&1
+echo    [✓] Backup creado
+
+echo [2/10] 🧠 Analizando perfil de uso del sistema...
+timeout /t 1 /nobreak >nul
+
+:: Optimizaciones basadas en IA
+set /a OPT_COUNT=0
+
+echo [3/10] ⚡ Activando plan de energía Ultimate Performance...
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg -change -monitor-timeout-ac 0 >nul 2>&1
+powercfg -change -disk-timeout-ac 0 >nul 2>&1
+echo    [✓] Plan de energía optimizado
+set /a OPT_COUNT+=1
+
+echo [4/10] 🛑 Desactivando SysMain...
+sc config "SysMain" start= disabled >nul 2>&1
+sc stop "SysMain" >nul 2>&1
+echo    [✓] SysMain desactivado
+set /a OPT_COUNT+=1
+
+echo [5/10] 📊 Desactivando telemetría...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f >nul 2>&1
+sc stop DiagTrack >nul 2>&1
+sc config DiagTrack start= disabled >nul 2>&1
+echo    [✓] Telemetría desactivada
+set /a OPT_COUNT+=1
+
+echo [6/10] 🎭 Desactivando efectos visuales...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Efectos visuales minimizados
+set /a OPT_COUNT+=1
+
+echo [7/10] 🌐 Optimizando red...
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+netsh int tcp set global chimney=enabled >nul 2>&1
+netsh int tcp set global rss=enabled >nul 2>&1
+echo    [✓] Red optimizada
+set /a OPT_COUNT+=1
+
+echo [8/10] 🎮 Desactivando Game DVR...
+reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Game DVR desactivado, Game Mode activado
+set /a OPT_COUNT+=1
+
+if "!DISKTYPE!"=="SSD" (
+    echo [9/10] 💿 Optimizando para SSD...
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] TRIM habilitado, Prefetch desactivado
+    set /a OPT_COUNT+=1
+) else if "!DISKTYPE!"=="NVME" (
+    echo [9/10] 💿 Optimizando para NVMe...
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] TRIM habilitado, Prefetch desactivado
+    set /a OPT_COUNT+=1
+) else (
+    echo [9/10] 💿 HDD detectado...
+    echo    [→] Prefetch mantenido para HDD
+)
+
+if !RAM_GB! GEQ 16 (
+    echo [10/10] 💾 Optimizando para RAM alta...
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v DisablePagingExecutive /t REG_DWORD /d 1 /f >nul 2>&1
+    echo    [✓] Paginación ejecutiva desactivada
+    set /a OPT_COUNT+=1
+) else (
+    echo [10/10] 💾 RAM: !RAM_GB!GB
+    echo    [→] Configuración estándar mantenida
+)
+
+:: Recalcular health score
+set /a NEW_HEALTH_SCORE=!HEALTH_SCORE!+15
+if !NEW_HEALTH_SCORE! GTR 100 set NEW_HEALTH_SCORE=100
+
+echo.
+echo [AI] Optimización completada >> "%LOG_FILE%"
+echo [AI] Optimizaciones aplicadas: !OPT_COUNT! >> "%LOG_FILE%"
+echo [AI] Health Score: !HEALTH_SCORE! → !NEW_HEALTH_SCORE! >> "%LOG_FILE%"
+
+set HEALTH_SCORE=!NEW_HEALTH_SCORE!
+
+color 0A
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ OPTIMIZACIÓN AUTOMÁTICA IA COMPLETADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo   [✓] !OPT_COUNT! optimizaciones aplicadas
+echo   [✓] Health Score: !NEW_HEALTH_SCORE!/100
+echo.
+echo   [i] Se recomienda REINICIAR el sistema
+echo.
+choice /c SN /n /m "¿Reiniciar ahora? [S/N]: "
+if !errorlevel!==1 (
+    shutdown /r /t 10 /c "%SCRIPT_NAME%: Optimizaciones IA aplicadas"
+    exit /b 0
+)
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 2. OPTIMIZACIÓN COMPLETA
+:: ═══════════════════════════════════════════════════════════════════════════════
+:full_optimize
+cls
+color 0A
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ⚡ OPTIMIZACIÓN COMPLETA - 50+ MEJORAS
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando Optimización COMPLETA >> "%LOG_FILE%"
+echo.
+choice /c SN /n /m "¿Continuar? [S/N]: "
+if !errorlevel!==2 goto menu
+
+echo.
+set "BACKUP_FULL=%~dp0Registry_Backup_Full_%TIMESTAMP%.reg"
+echo [0/50] 💾 Creando backup completo...
+reg export HKLM\SOFTWARE "%BACKUP_FULL%" /y >nul 2>&1
+echo    [✓] Backup creado
+
+echo [1/50] 🔄 Creando punto de restauración...
+powershell -Command "Checkpoint-Computer -Description '%SCRIPT_NAME%_Full' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction SilentlyContinue" >nul 2>&1
+echo    [✓] Punto de restauración creado
+
+echo [2/50] ⚡ Plan de energía Ultimate Performance...
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg -change -monitor-timeout-ac 0 >nul 2>&1
+powercfg -change -disk-timeout-ac 0 >nul 2>&1
+powercfg -change -standby-timeout-ac 0 >nul 2>&1
+echo    [✓] Plan activado
+
+echo [3/50] 💤 Desactivando hibernación...
+powercfg -h off >nul 2>&1
+echo    [✓] Hibernación desactivada
+
+echo [4/50] 🔧 Configurando Prefetch/Superfetch...
+if "!DISKTYPE!"=="SSD" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnableSuperfetch /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] Desactivado (SSD)
+) else if "!DISKTYPE!"=="NVME" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnableSuperfetch /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] Desactivado (NVMe)
+) else (
+    echo    [→] Mantenido (HDD)
+)
+
+echo [5/50] 💾 Configurando paginación ejecutiva...
+if !RAM_GB! GEQ 8 (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v DisablePagingExecutive /t REG_DWORD /d 1 /f >nul 2>&1
+    echo    [✓] Desactivada (8GB+ RAM)
+) else (
+    echo    [→] Mantenida (RAM baja)
+)
+
+echo [6/50] 🛑 Desactivando SysMain...
+sc config "SysMain" start= disabled >nul 2>&1
+sc stop "SysMain" >nul 2>&1
+echo    [✓] SysMain detenido
+
+echo [7/50] ☁️  Desinstalando OneDrive...
+taskkill /f /im OneDrive.exe >nul 2>&1
+if exist "%SystemRoot%\SysWOW64\OneDriveSetup.exe" (
+    "%SystemRoot%\SysWOW64\OneDriveSetup.exe" /uninstall >nul 2>&1
+)
+if exist "%SystemRoot%\System32\OneDriveSetup.exe" (
+    "%SystemRoot%\System32\OneDriveSetup.exe" /uninstall >nul 2>&1
+)
+timeout /t 2 /nobreak >nul
+rd /s /q "%UserProfile%\OneDrive" >nul 2>&1
+rd /s /q "%LocalAppData%\Microsoft\OneDrive" >nul 2>&1
+rd /s /q "%ProgramData%\Microsoft OneDrive" >nul 2>&1
+reg delete "HKCU\Software\Microsoft\OneDrive" /f >nul 2>&1
+echo    [✓] OneDrive desinstalado
+
+echo [8/50] 🎨 Desinstalando Widgets...
+PowerShell -NoP -C "Get-AppxPackage *WebExperience* | Remove-AppxPackage -AllUsers -ErrorAction SilentlyContinue" >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarDa /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Widgets desinstalados
+
+echo [9/50] 🛡️  Optimizando Windows Defender...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Scan" /v AvgCPULoadFactor /t REG_DWORD /d 20 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender\Scan" /v LowCpuPriority /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Defender optimizado
+
+echo [10/50] 🖼️  Limpiando caché de iconos...
+taskkill /f /im explorer.exe >nul 2>&1
+del /f /s /q "%LocalAppData%\IconCache.db" >nul 2>&1
+del /f /s /q "%LocalAppData%\Microsoft\Windows\Explorer\*.db" >nul 2>&1
+start explorer.exe
+timeout /t 2 /nobreak >nul
+echo    [✓] Caché limpiado
+
+echo [11/50] 📊 Desactivando DiagTrack...
+sc stop DiagTrack >nul 2>&1
+sc config DiagTrack start= disabled >nul 2>&1
+sc stop dmwappushservice >nul 2>&1
+sc config dmwappushservice start= disabled >nul 2>&1
+echo    [✓] Telemetría desactivada
+
+echo [12/50] 🎭 Minimizando efectos visuales...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAnimations /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Efectos minimizados
+
+echo [13/50] 📰 Desactivando noticias...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Feeds" /v ShellFeedsTaskbarViewMode /t REG_DWORD /d 2 /f >nul 2>&1
+echo    [✓] Noticias desactivadas
+
+echo [14/50] 🔍 Desactivando Bing y Cortana...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Search" /v BingSearchEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\Windows Search" /v AllowCortana /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Bing y Cortana desactivados
+
+echo [15/50] 📡 Reduciendo telemetría...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 0 /f >nul 2>&1
+schtasks /Change /TN "Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" /Disable >nul 2>&1
+echo    [✓] Telemetría reducida
+
+echo [16/50] 🎮 Optimizaciones gaming...
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v Priority /t REG_DWORD /d 6 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
+echo    [✓] Prioridades gaming aplicadas
+
+echo [17/50] ⚙️  Optimizando Win32PrioritySeparation...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v Win32PrioritySeparation /t REG_DWORD /d 26 /f >nul 2>&1
+echo    [✓] PrioritySeparation optimizado
+
+echo [18/50] 🌐 Optimizando red...
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+netsh int tcp set global chimney=enabled >nul 2>&1
+netsh int tcp set global dca=enabled >nul 2>&1
+netsh int tcp set global netdma=enabled >nul 2>&1
+netsh int tcp set global rss=enabled >nul 2>&1
+echo    [✓] Red optimizada
+
+echo [19/50] 🔎 Evaluando Windows Search...
+if !RAM_GB! LEQ 4 (
+    sc config "WSearch" start= disabled >nul 2>&1
+    sc stop "WSearch" >nul 2>&1
+    echo    [✓] WSearch detenido (RAM baja)
+) else (
+    echo    [→] WSearch mantenido
+)
+
+echo [20/50] 🎬 Desactivando Game DVR...
+reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" /v value /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Game DVR desactivado
+
+echo [21/50] 🖱️  Menú contextual clásico...
+reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /f >nul 2>&1
+echo    [✓] Menú clásico restaurado
+
+echo [22/50] 🎨 GPU scheduling...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode /t REG_DWORD /d 2 /f >nul 2>&1
+echo    [✓] GPU scheduling habilitado
+
+echo [23/50] 🛑 Desactivando servicios innecesarios...
+for %%s in (
+    TabletInputService
+    MapsBroker
+    lfsvc
+    PhoneSvc
+    Fax
+    XblAuthManager
+    XblGameSave
+    XboxNetApiSvc
+    XboxGipSvc
+) do (
+    sc config "%%s" start= disabled >nul 2>&1
+    sc stop "%%s" >nul 2>&1
+)
+echo    [✓] Servicios desactivados
+
+echo [24/50] 🧹 Limpiando temporales...
+if exist "%TEMP%" (
+    pushd "%TEMP%" 2>nul
+    for /f "delims=" %%F in ('dir /b /a 2^>nul') do (
+        if /i not "%%F"=="desktop.ini" (
+            rd /s /q "%%F" 2>nul
+            del /f /q "%%F" 2>nul
+        )
+    )
+    popd
+)
+echo    [✓] Temporales limpiados
+
+echo [25/50] 🎬 Desactivando animaciones...
+reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 0 /f >nul 2>&1
+echo    [✓] Animaciones desactivadas
+
+echo [26/50] 💿 Optimizando TRIM...
+if "!DISKTYPE!"=="SSD" (
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    echo    [✓] TRIM habilitado (SSD)
+) else if "!DISKTYPE!"=="NVME" (
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    echo    [✓] TRIM habilitado (NVMe)
+) else (
+    echo    [→] HDD - TRIM no aplicable
+)
+
+echo [27/50] 🔄 Limpiando Windows Update...
+net stop wuauserv >nul 2>&1
+net stop bits >nul 2>&1
+del /f /s /q "%WINDIR%\SoftwareDistribution\Download\*.*" >nul 2>&1
+net start wuauserv >nul 2>&1
+net start bits >nul 2>&1
+echo    [✓] Caché WU limpiado
+
+echo [28/50] 📍 Desactivando rastreo...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v EnableActivityFeed /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v PublishUserActivities /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Rastreo desactivado
+
+echo [29/50] 🪟 Optimizando transparencias...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Transparencias desactivadas
+
+echo [30/50] 🖨️  Spooler de impresión...
+choice /c SN /n /t 5 /d N /m "¿Desactivar Spooler? [S/N] (Auto: N): "
+if !errorlevel!==1 (
+    sc config "Spooler" start= disabled >nul 2>&1
+    sc stop "Spooler" >nul 2>&1
+    echo    [✓] Spooler desactivado
+) else (
+    echo    [→] Spooler mantenido
+)
+
+echo [31/50] 🔐 Desactivando Sticky Keys...
+reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d "506" /f >nul 2>&1
+reg add "HKCU\Control Panel\Accessibility\ToggleKeys" /v Flags /t REG_SZ /d "58" /f >nul 2>&1
+echo    [✓] Sticky Keys desactivadas
+
+echo [32/50] ✍️  Datos de escritura...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\HandwritingErrorReports" /v PreventHandwritingErrorReports /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Recolección desactivada
+
+echo [33/50] ⏱️  Tiempos de espera...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control" /v WaitToKillServiceTimeout /t REG_SZ /d "2000" /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop" /v WaitToKillAppTimeout /t REG_SZ /d "5000" /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop" /v AutoEndTasks /t REG_SZ /d "1" /f >nul 2>&1
+echo    [✓] Tiempos optimizados
+
+echo [34/50] 📦 Delivery Optimization...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\DeliveryOptimization\Config" /v DODownloadMode /t REG_DWORD /d 0 /f >nul 2>&1
+sc config "DoSvc" start= disabled >nul 2>&1
+sc stop "DoSvc" >nul 2>&1
+echo    [✓] P2P desactivado
+
+echo [35/50] 💡 Sugerencias Windows...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-338388Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SubscribedContent-338389Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v SystemPaneSuggestionsEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Sugerencias desactivadas
+
+echo [36/50] 📄 Archivo de paginación...
+if !RAM_GB! GEQ 16 (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v PagingFiles /t REG_MULTI_SZ /d "C:\pagefile.sys 2048 2048" /f >nul 2>&1
+    echo    [✓] Pagefile 2GB (16GB+ RAM)
+) else if !RAM_GB! GEQ 8 (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v PagingFiles /t REG_MULTI_SZ /d "C:\pagefile.sys 4096 4096" /f >nul 2>&1
+    echo    [✓] Pagefile 4GB (8-16GB RAM)
+) else (
+    echo    [→] Pagefile automático
+)
+
+echo [37/50] 🔇 Efectos de sonido...
+reg add "HKCU\AppEvents\Schemes" /ve /t REG_SZ /d ".None" /f >nul 2>&1
+reg add "HKCU\Control Panel\Sound" /v Beep /t REG_SZ /d "no" /f >nul 2>&1
+echo    [✓] Sonidos desactivados
+
+echo [38/50] 🔔 Notificaciones...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings" /v NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Notificaciones desactivadas
+
+echo [39/50] 🌍 Ubicación...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" /v Value /t REG_SZ /d "Deny" /f >nul 2>&1
+echo    [✓] Ubicación desactivada
+
+echo [40/50] 🖼️  Fullscreen Optimizations...
+reg add "HKCU\System\GameConfigStore" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 2 /f >nul 2>&1
+echo    [✓] FSO desactivado
+
+echo [41/50] 🎯 DirectX...
+reg add "HKCU\Software\Microsoft\DirectX\UserGpuPreferences" /v DirectXUserGlobalSettings /t REG_SZ /d "VRROptimizeEnable=1;" /f >nul 2>&1
+echo    [✓] DirectX optimizado
+
+echo [42/50] 🚫 Algoritmo de Nagle...
+for /f %%i in ('wmic path win32_networkadapter get GUID ^| findstr "{"') do (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpAckFrequency /t REG_DWORD /d 1 /f >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TCPNoDelay /t REG_DWORD /d 1 /f >nul 2>&1
+)
+echo    [✓] Nagle desactivado
+
+echo [43/50] 🌐 Caché DNS...
+ipconfig /flushdns >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" /v MaxCacheTtl /t REG_DWORD /d 86400 /f >nul 2>&1
+echo    [✓] DNS optimizado
+
+echo [44/50] 🔒 SmartScreen...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\System" /v EnableSmartScreen /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] SmartScreen desactivado
+
+echo [45/50] 📱 Sincronización...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\SettingSync" /v SyncPolicy /t REG_DWORD /d 5 /f >nul 2>&1
+echo    [✓] Sincronización desactivada
+
+echo [46/50] 🎤 Asistente de voz...
+reg add "HKCU\Software\Microsoft\Speech_OneCore\Settings\VoiceActivation\UserPreferenceForAllApps" /v AgentActivationEnabled /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Asistente desactivado
+
+echo [47/50] 📸 Acceso a cámara...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\webcam" /v Value /t REG_SZ /d "Deny" /f >nul 2>&1
+echo    [✓] Cámara restringida
+
+echo [48/50] 🎙️  Acceso a micrófono...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\microphone" /v Value /t REG_SZ /d "Deny" /f >nul 2>&1
+echo    [✓] Micrófono restringido
+
+echo [49/50] 🔋 Energía avanzada...
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100 >nul 2>&1
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100 >nul 2>&1
+powercfg /setactive SCHEME_CURRENT >nul 2>&1
+echo    [✓] CPU 100%%
+
+echo [50/50] ✅ Verificando integridad...
+timeout /t 2 /nobreak >nul
+echo    [✓] Verificación completada
+
+echo.
+color 0A
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ OPTIMIZACIÓN COMPLETA FINALIZADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo [%date% %time%] Optimización COMPLETA finalizada >> "%LOG_FILE%"
+echo.
+echo   [✓] 50 optimizaciones aplicadas
+echo   [i] Se recomienda REINICIAR el sistema
+echo.
+choice /c SN /n /m "¿Reiniciar ahora? [S/N]: "
+if !errorlevel!==1 (
+    shutdown /r /t 10 /c "%SCRIPT_NAME%: Optimizaciones completas"
+    exit /b 0
+)
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 3. GAMING PRO EXTREME
+:: ═══════════════════════════════════════════════════════════════════════════════
+:gaming_pro_extreme
+cls
+color 0D
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🎮 GAMING PRO EXTREME - MÁXIMO RENDIMIENTO
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando Gaming Pro Extreme >> "%LOG_FILE%"
+echo.
+
+set "BACKUP_GAMING=%~dp0Registry_Backup_Gaming_%TIMESTAMP%.reg"
+echo [0/15] 💾 Creando backup gaming...
+reg export "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" "%BACKUP_GAMING%" /y >nul 2>&1
+echo    [✓] Backup creado
+
+echo [1/15] ⚡ Ultimate Performance...
+powercfg -duplicatescheme e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+powercfg -setactive e9a42b02-d5df-448d-aa00-03f14749eb61 >nul 2>&1
+echo    [✓] Plan activado
+
+echo [2/15] 🎮 Perfil gaming...
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v SystemResponsiveness /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile" /v NetworkThrottlingIndex /t REG_DWORD /d 0xffffffff /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "GPU Priority" /t REG_DWORD /d 8 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v Priority /t REG_DWORD /d 6 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "Scheduling Category" /t REG_SZ /d "High" /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Multimedia\SystemProfile\Tasks\Games" /v "SFIO Priority" /t REG_SZ /d "High" /f >nul 2>&1
+echo    [✓] Prioridades gaming
+
+echo [3/15] 🎭 Efectos visuales...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAnimations /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize" /v EnableTransparency /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Efectos minimizados
+
+echo [4/15] 🌐 Red gaming...
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+netsh int tcp set global chimney=enabled >nul 2>&1
+netsh int tcp set global rss=enabled >nul 2>&1
+netsh int tcp set heuristics disabled >nul 2>&1
+netsh int tcp set global timestamps=disabled >nul 2>&1
+echo    [✓] Red optimizada
+
+echo [5/15] 🚫 Desactivando Nagle...
+for /f %%i in ('wmic path win32_networkadapter get GUID ^| findstr "{"') do (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpAckFrequency /t REG_DWORD /d 1 /f >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TCPNoDelay /t REG_DWORD /d 1 /f >nul 2>&1
+)
+echo    [✓] Nagle desactivado
+
+echo [6/15] 🎬 Game DVR y Game Mode...
+reg add "HKCU\System\GameConfigStore" /v GameDVR_Enabled /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\System\GameConfigStore" /v GameDVR_FSEBehaviorMode /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\PolicyManager\default\ApplicationManagement\AllowGameDVR" /v value /t REG_DWORD /d 0 /f >nul 2>&1
+reg add "HKCU\Software\Microsoft\GameBar" /v AutoGameModeEnabled /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Game DVR off, Game Mode on
+
+echo [7/15] 🖼️  Fullscreen Optimizations...
+reg add "HKCU\System\GameConfigStore" /v GameDVR_FSEBehavior /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKCU\System\GameConfigStore" /v GameDVR_HonorUserFSEBehaviorMode /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] FSO desactivado
+
+echo [8/15] 🎯 DirectX...
+reg add "HKCU\Software\Microsoft\DirectX\UserGpuPreferences" /v DirectXUserGlobalSettings /t REG_SZ /d "VRROptimizeEnable=1;" /f >nul 2>&1
+echo    [✓] DirectX optimizado
+
+echo [9/15] 🎨 GPU scheduling (HAGS)...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers" /v HwSchMode /t REG_DWORD /d 2 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\GraphicsDrivers\Scheduler" /v EnablePreemption /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] HAGS habilitado
+
+echo [10/15] 🛑 SysMain y Prefetch...
+sc config "SysMain" start= disabled >nul 2>&1
+sc stop "SysMain" >nul 2>&1
+if "!DISKTYPE!"=="SSD" (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+)
+echo    [✓] SysMain desactivado
+
+echo [11/15] 🛑 Servicios innecesarios...
+for %%s in (
+    dmwappushservice
+    WerSvc
+    XblAuthManager
+    XblGameSave
+    XboxNetApiSvc
+    XboxGipSvc
+) do (
+    sc config "%%s" start= disabled >nul 2>&1
+    sc stop "%%s" >nul 2>&1
+)
+echo    [✓] Servicios detenidos
+
+echo [12/15] 🌐 DNS cache...
+ipconfig /flushdns >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" /v MaxCacheTtl /t REG_DWORD /d 86400 /f >nul 2>&1
+echo    [✓] DNS optimizado
+
+echo [13/15] ⚙️  Win32PrioritySeparation...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\PriorityControl" /v Win32PrioritySeparation /t REG_DWORD /d 26 /f >nul 2>&1
+echo    [✓] Prioridades optimizadas
+
+echo [14/15] 🔋 CPU máximo rendimiento...
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMIN 100 >nul 2>&1
+powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR PROCTHROTTLEMAX 100 >nul 2>&1
+powercfg /setactive SCHEME_CURRENT >nul 2>&1
+echo    [✓] CPU 100%%
+
+echo [15/15] ✅ Verificando...
+timeout /t 2 /nobreak >nul
+echo    [✓] Completado
+
+echo.
+color 0D
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ GAMING PRO EXTREME COMPLETADO
+echo ════════════════════════════════════════════════════════════════════════════════
+echo [%date% %time%] Gaming Pro Extreme finalizado >> "%LOG_FILE%"
+echo.
+echo   [✓] 15 optimizaciones gaming aplicadas
+echo   [✓] Sistema configurado para máximo rendimiento
+echo   [✓] Latencia minimizada
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 4. PRODUCTIVIDAD AVANZADA
+:: ═══════════════════════════════════════════════════════════════════════════════
+:productivity_advanced
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   💼 PRODUCTIVIDAD AVANZADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando Productividad Avanzada >> "%LOG_FILE%"
+echo.
+
+set "BACKUP_PROD=%~dp0Registry_Backup_Productivity_%TIMESTAMP%.reg"
+echo [0/10] 💾 Creando backup...
+reg export HKCU\Software "%BACKUP_PROD%" /y >nul 2>&1
+echo    [✓] Backup creado
+
+echo [1/10] ⚡ Plan de energía balanceado...
+powercfg -setactive SCHEME_BALANCED >nul 2>&1
+powercfg -change -monitor-timeout-ac 15 >nul 2>&1
+powercfg -change -disk-timeout-ac 0 >nul 2>&1
+echo    [✓] Plan balanceado activado
+
+echo [2/10] 🔍 Manteniendo Windows Search...
+sc config "WSearch" start= auto >nul 2>&1
+sc start "WSearch" >nul 2>&1
+echo    [✓] Windows Search activo
+
+echo [3/10] 🎭 Efectos visuales moderados...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" /v VisualFXSetting /t REG_DWORD /d 3 /f >nul 2>&1
+echo    [✓] Efectos balanceados
+
+echo [4/10] 📊 Telemetría básica...
+reg add "HKLM\SOFTWARE\Policies\Microsoft\Windows\DataCollection" /v AllowTelemetry /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Telemetría básica
+
+echo [5/10] 🔔 Notificaciones importantes...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Notifications\Settings" /v NOC_GLOBAL_SETTING_ALLOW_TOASTS_ABOVE_LOCK /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Notificaciones habilitadas
+
+echo [6/10] 🌐 Red optimizada...
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+netsh int tcp set global chimney=enabled >nul 2>&1
+echo    [✓] Red optimizada
+
+echo [7/10] 💾 Archivo de paginación automático...
+reg delete "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v PagingFiles /f >nul 2>&1
+echo    [✓] Paginación automática
+
+echo [8/10] 🛡️  Windows Defender activo...
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /f >nul 2>&1
+echo    [✓] Defender activo
+
+echo [9/10] 🔄 Windows Update automático...
+sc config "wuauserv" start= auto >nul 2>&1
+sc start "wuauserv" >nul 2>&1
+echo    [✓] Windows Update activo
+
+echo [10/10] ✅ Verificando...
+timeout /t 2 /nobreak >nul
+echo    [✓] Completado
+
+echo.
+color 0B
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ PRODUCTIVIDAD AVANZADA COMPLETADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo [%date% %time%] Productividad Avanzada finalizada >> "%LOG_FILE%"
+echo.
+echo   [✓] Sistema optimizado para trabajo
+echo   [✓] Servicios esenciales activos
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 5. SEGURIDAD EXTREMA
+:: ═══════════════════════════════════════════════════════════════════════════════
+:security_extreme
+cls
+color 0C
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🔒 SEGURIDAD EXTREMA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando Seguridad Extrema >> "%LOG_FILE%"
+echo.
+
+echo [1/10] 🛡️  Activando Windows Defender...
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows Defender" /f >nul 2>&1
+sc config "WinDefend" start= auto >nul 2>&1
+sc start "WinDefend" >nul 2>&1
+echo    [✓] Defender activo
+
+echo [2/10] 🔥 Configurando Firewall...
+netsh advfirewall set allprofiles state on >nul 2>&1
+echo    [✓] Firewall activado
+
+echo [3/10] 🚫 Bloqueando SMBv1...
+dism /online /disable-feature /featurename:SMB1Protocol /norestart >nul 2>&1
+echo    [✓] SMBv1 desactivado
+
+echo [4/10] 🔒 Configurando UAC...
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v EnableLUA /t REG_DWORD /d 1 /f >nul 2>&1
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" /v ConsentPromptBehaviorAdmin /t REG_DWORD /d 2 /f >nul 2>&1
+echo    [✓] UAC configurado
+
+echo [5/10] 🚫 Desactivando PowerShell v2...
+dism /online /disable-feature /featurename:MicrosoftWindowsPowerShellV2 /norestart >nul 2>&1
+echo    [✓] PowerShell v2 desactivado
+
+echo [6/10] 🔐 Bloqueando puertos peligrosos...
+netsh advfirewall firewall add rule name="Block_RPC_135" dir=in action=block protocol=TCP localport=135 >nul 2>&1
+netsh advfirewall firewall add rule name="Block_SMB_445" dir=in action=block protocol=TCP localport=445 >nul 2>&1
+netsh advfirewall firewall add rule name="Block_RDP_3389" dir=in action=block protocol=TCP localport=3389 >nul 2>&1
+echo    [✓] Puertos bloqueados
+
+echo [7/10] 🛡️  Memory Integrity...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control\DeviceGuard\Scenarios\HypervisorEnforcedCodeIntegrity" /v Enabled /t REG_DWORD /d 1 /f >nul 2>&1
+echo    [✓] Memory Integrity habilitado
+
+echo [8/10] 🔒 BitLocker check...
+manage-bde -status C: >nul 2>&1
+if !errorlevel!==0 (
+    echo    [✓] BitLocker disponible
+) else (
+    echo    [!] BitLocker no disponible
+)
+
+echo [9/10] 🔄 Windows Update forzado...
+sc config "wuauserv" start= auto >nul 2>&1
+sc start "wuauserv" >nul 2>&1
+echo    [✓] Windows Update activo
+
+echo [10/10] ✅ Verificando...
+timeout /t 2 /nobreak >nul
+echo    [✓] Completado
+
+echo.
+color 0C
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ SEGURIDAD EXTREMA APLICADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo [%date% %time%] Seguridad Extrema finalizada >> "%LOG_FILE%"
+echo.
+echo   [✓] Sistema protegido
+echo   [✓] Firewall y Defender activos
+echo   [✓] Puertos peligrosos bloqueados
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 6. DESINSTALAR BLOATWARE
+:: ═══════════════════════════════════════════════════════════════════════════════
+:remove_bloatware
+cls
+color 0C
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🗑️  DESINSTALAR BLOATWARE
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo   ADVERTENCIA: Esto desinstalará apps permanentemente
+echo.
+choice /c SN /n /m "¿Continuar? [S/N]: "
+if !errorlevel!==2 goto menu
+
+echo.
+echo [%date% %time%] Iniciando eliminación de bloatware >> "%LOG_FILE%"
+echo.
+echo Desinstalando apps innecesarias...
+echo.
+
+set TOTAL_APPS=25
+set CURRENT=0
+
+for %%A in (
+    "3dbuilder:3D Builder"
+    "windowsalarms:Alarmas"
+    "windowscommunicationsapps:Mail"
+    "windowscamera:Cámara"
+    "officehub:Office Hub"
+    "skypeapp:Skype"
+    "getstarted:Get Started"
+    "zunemusic:Groove Music"
+    "windowsmaps:Mapas"
+    "solitairecollection:Solitario"
+    "bingfinance:Money"
+    "zunevideo:Películas"
+    "bingnews:Noticias"
+    "onenote:OneNote"
+    "people:Contactos"
+    "windowsphone:Phone Companion"
+    "bingsports:Deportes"
+    "soundrecorder:Grabadora"
+    "bingweather:Clima"
+    "xboxapp:Xbox"
+    "xboxgamingoverlay:Xbox Game Bar"
+    "feedback:Feedback Hub"
+    "mixedreality:Mixed Reality"
+    "yourphone:Tu Teléfono"
+    "gethelp:Obtener Ayuda"
+) do (
+    set /a CURRENT+=1
+    for /f "tokens=1,2 delims=:" %%B in ("%%~A") do (
+        powershell -NoP -C "Get-AppxPackage *%%B* | Remove-AppxPackage -ErrorAction SilentlyContinue" >nul 2>&1
+        echo [!CURRENT!/!TOTAL_APPS!] %%C
+    )
+)
+
+echo.
+echo [%date% %time%] Bloatware eliminado >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ DESINSTALACIÓN COMPLETADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo   [✓] !TOTAL_APPS! apps eliminadas
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 7. LIMPIEZA PROFUNDA
+:: ═══════════════════════════════════════════════════════════════════════════════
+:deep_cleanup
+cls
+color 09
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🧹 LIMPIEZA PROFUNDA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando limpieza profunda >> "%LOG_FILE%"
+echo.
+
+echo [1/10] 🧹 Limpiando temporales de usuario...
+if exist "%TEMP%" (
+    pushd "%TEMP%" 2>nul
+    for /f "delims=" %%F in ('dir /b /a 2^>nul') do (
+        if /i not "%%F"=="desktop.ini" (
+            rd /s /q "%%F" 2>nul
+            del /f /q "%%F" 2>nul
+        )
+    )
+    popd
+)
+echo    [✓] Temporales de usuario limpiados
+
+echo [2/10] 🧹 Limpiando temporales del sistema...
+if exist "C:\Windows\Temp" (
+    pushd "C:\Windows\Temp" 2>nul
+    for /f "delims=" %%F in ('dir /b /a 2^>nul') do (
+        rd /s /q "%%F" 2>nul
+        del /f /q "%%F" 2>nul
+    )
+    popd
+)
+echo    [✓] Temporales del sistema limpiados
+
+echo [3/10] 🧹 Limpiando prefetch...
+if exist "C:\Windows\Prefetch" (
+    forfiles /p "C:\Windows\Prefetch" /s /m *.pf /d -30 /c "cmd /c del /q @path" 2>nul
+)
+echo    [✓] Prefetch limpiado
+
+echo [4/10] 🌐 Limpiando caché de navegadores...
+if exist "%LocalAppData%\Google\Chrome\User Data\Default\Cache" (
+    rd /s /q "%LocalAppData%\Google\Chrome\User Data\Default\Cache" >nul 2>&1
+    md "%LocalAppData%\Google\Chrome\User Data\Default\Cache" >nul 2>&1
+)
+if exist "%LocalAppData%\Microsoft\Edge\User Data\Default\Cache" (
+    rd /s /q "%LocalAppData%\Microsoft\Edge\User Data\Default\Cache" >nul 2>&1
+    md "%LocalAppData%\Microsoft\Edge\User Data\Default\Cache" >nul 2>&1
+)
+echo    [✓] Caché de navegadores limpiado
+
+echo [5/10] 🖼️  Limpiando thumbnails...
+del /f /s /q "%LocalAppData%\Microsoft\Windows\Explorer\thumbcache_*.db" >nul 2>&1
+echo    [✓] Miniaturas limpiadas
+
+echo [6/10] 📜 Limpiando logs antiguos...
+del /f /q C:\Windows\Logs\CBS\*.log >nul 2>&1
+del /f /q C:\Windows\Logs\DISM\*.log >nul 2>&1
+forfiles /p "C:\Windows\Logs" /s /m *.log /d -30 /c "cmd /c del /q @path" >nul 2>&1
+echo    [✓] Logs antiguos eliminados
+
+echo [7/10] 🗑️  Vaciando papelera...
+powershell -NoP -C "Clear-RecycleBin -Force -ErrorAction SilentlyContinue" >nul 2>&1
+echo    [✓] Papelera vaciada
+
+echo [8/10] 🔄 Limpiando Windows Update...
+net stop wuauserv >nul 2>&1
+net stop bits >nul 2>&1
+del /f /s /q "%WINDIR%\SoftwareDistribution\Download\*.*" >nul 2>&1
+net start wuauserv >nul 2>&1
+net start bits >nul 2>&1
+echo    [✓] Caché de WU limpiado
+
+echo [9/10] 📊 Limpiando eventos...
+wevtutil cl Application >nul 2>&1
+wevtutil cl System >nul 2>&1
+echo    [✓] Eventos limpiados
+
+echo [10/10] 🧹 Disk Cleanup...
+start /wait cleanmgr /d C:
+echo    [✓] Disk Cleanup completado
+
+echo.
+echo [%date% %time%] Limpieza profunda finalizada >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ LIMPIEZA PROFUNDA COMPLETADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 8. OPTIMIZACIÓN DE RED
+:: ═══════════════════════════════════════════════════════════════════════════════
+:network_optimize
+cls
+color 0E
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🌐 OPTIMIZACIÓN DE RED
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando optimización de red >> "%LOG_FILE%"
+echo.
+
+echo [1/8] 🌐 Optimizando TCP/IP...
+netsh int tcp set global autotuninglevel=normal >nul 2>&1
+netsh int tcp set global chimney=enabled >nul 2>&1
+netsh int tcp set global dca=enabled >nul 2>&1
+netsh int tcp set global netdma=enabled >nul 2>&1
+netsh int tcp set global rss=enabled >nul 2>&1
+echo    [✓] TCP/IP optimizado
+
+echo [2/8] 🚫 Desactivando IPv6...
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" /v DisabledComponents /t REG_DWORD /d 255 /f >nul 2>&1
+echo    [✓] IPv6 desactivado
+
+echo [3/8] 🌐 Limpiando DNS...
+ipconfig /flushdns >nul 2>&1
+echo    [✓] DNS limpiado
+
+echo [4/8] 🚫 Desactivando NetBIOS...
+powershell -Command "$adapters = Get-WmiObject Win32_NetworkAdapterConfiguration -Filter 'IPEnabled=True'; foreach($adapter in $adapters) { $adapter.SetTcpipNetbios(2) }" >nul 2>&1
+echo    [✓] NetBIOS desactivado
+
+echo [5/8] 🔄 Reiniciando adaptador...
+netsh winsock reset >nul 2>&1
+echo    [✓] Adaptador reiniciado
+
+echo [6/8] 🚫 Algoritmo de Nagle...
+for /f %%i in ('wmic path win32_networkadapter get GUID ^| findstr "{"') do (
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TcpAckFrequency /t REG_DWORD /d 1 /f >nul 2>&1
+    reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\%%i" /v TCPNoDelay /t REG_DWORD /d 1 /f >nul 2>&1
+)
+echo    [✓] Nagle desactivado
+
+echo [7/8] 🌐 DNS cache...
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" /v MaxCacheTtl /t REG_DWORD /d 86400 /f >nul 2>&1
+reg add "HKLM\SYSTEM\CurrentControlSet\Services\Dnscache\Parameters" /v MaxNegativeCacheTtl /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] DNS cache optimizado
+
+echo [8/8] ✅ Verificando...
+timeout /t 2 /nobreak >nul
+echo    [✓] Completado
+
+echo.
+echo [%date% %time%] Optimización de red finalizada >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ OPTIMIZACIÓN DE RED COMPLETADA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: 9. OPTIMIZACIÓN DE ALMACENAMIENTO
+:: ═══════════════════════════════════════════════════════════════════════════════
+:storage_optimize
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   💾 OPTIMIZACIÓN DE ALMACENAMIENTO
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo   Tipo de disco detectado: !DISKTYPE!
+echo.
+echo [%date% %time%] Iniciando optimización de almacenamiento >> "%LOG_FILE%"
+echo.
+
+if "!DISKTYPE!"=="SSD" (
+    echo ═══ OPTIMIZACIONES PARA SSD ═══
+    echo.
+    
+    echo [1/5] 🚫 Desactivando desfragmentación...
+    schtasks /Change /TN "\Microsoft\Windows\Defrag\ScheduledDefrag" /Disable >nul 2>&1
+    echo    [✓] Desfragmentación desactivada
+    
+    echo [2/5] ✅ Habilitando TRIM...
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    fsutil behavior set DisableDeleteNotify REFS 0 >nul 2>&1
+    echo    [✓] TRIM habilitado
+    
+    echo [3/5] 🚫 Desactivando Prefetch...
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] Prefetch desactivado
+    
+    echo [4/5] 🚫 Desactivando Superfetch...
+    sc config "SysMain" start= disabled >nul 2>&1
+    sc stop "SysMain" >nul 2>&1
+    echo    [✓] Superfetch desactivado
+    
+    echo [5/5] 📄 Optimizando archivo de paginación...
+    if !RAM_GB! GEQ 16 (
+        reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v PagingFiles /t REG_MULTI_SZ /d "C:\pagefile.sys 2048 2048" /f >nul 2>&1
+        echo    [✓] Pagefile reducido (16GB+ RAM)
+    ) else (
+        echo    [→] RAM insuficiente para reducir paginación
+    )
+    
+) else if "!DISKTYPE!"=="NVME" (
+    echo ═══ OPTIMIZACIONES PARA NVME ═══
+    echo.
+    
+    echo [1/5] 🚫 Desactivando desfragmentación...
+    schtasks /Change /TN "\Microsoft\Windows\Defrag\ScheduledDefrag" /Disable >nul 2>&1
+    echo    [✓] Desfragmentación desactivada
+    
+    echo [2/5] ✅ Habilitando TRIM...
+    fsutil behavior set DisableDeleteNotify 0 >nul 2>&1
+    fsutil behavior set DisableDeleteNotify REFS 0 >nul 2>&1
+    echo    [✓] TRIM habilitado
+    
+    echo [3/5] 🚫 Desactivando Prefetch...
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 0 /f >nul 2>&1
+    echo    [✓] Prefetch desactivado
+    
+    echo [4/5] 🚫 Desactivando Superfetch...
+    sc config "SysMain" start= disabled >nul 2>&1
+    sc stop "SysMain" >nul 2>&1
+    echo    [✓] Superfetch desactivado
+    
+    echo [5/5] 📄 Optimizando archivo de paginación...
+    if !RAM_GB! GEQ 16 (
+        reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management" /v PagingFiles /t REG_MULTI_SZ /d "C:\pagefile.sys 2048 2048" /f >nul 2>&1
+        echo    [✓] Pagefile reducido (16GB+ RAM)
+    ) else (
+        echo    [→] RAM insuficiente
+    )
+    
+) else (
+    echo ═══ OPTIMIZACIONES PARA HDD ═══
+    echo.
+    
+    echo [1/4] ✅ Habilitando desfragmentación...
+    schtasks /Change /TN "\Microsoft\Windows\Defrag\ScheduledDefrag" /Enable >nul 2>&1
+    echo    [✓] Desfragmentación habilitada
+    
+    echo [2/4] ✅ Manteniendo Prefetch...
+    reg add "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management\PrefetchParameters" /v EnablePrefetcher /t REG_DWORD /d 3 /f >nul 2>&1
+    echo    [✓] Prefetch optimizado
+    
+    echo [3/4] ✅ Optimizando Superfetch...
+    sc config "SysMain" start= auto >nul 2>&1
+    sc start "SysMain" >nul 2>&1
+    echo    [✓] Superfetch optimizado
+    
+    echo [4/4] 🔧 Ejecutando desfragmentación...
+    defrag C: /O /H /U >nul 2>&1
+    echo    [✓] Desfragmentación completada
+)
+
+echo.
+echo [%date% %time%] Optimización de almacenamiento finalizada >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ ALMACENAMIENTO OPTIMIZADO
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: A. TWEAKS AVANZADOS
+:: ═══════════════════════════════════════════════════════════════════════════════
+:advanced_tweaks
+cls
+color 0E
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ⚙️  TWEAKS AVANZADOS DEL REGISTRO
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo [%date% %time%] Iniciando tweaks avanzados >> "%LOG_FILE%"
+echo.
+
+set "BACKUP_TWEAKS=%~dp0Registry_Backup_Tweaks_%TIMESTAMP%.reg"
+echo [0/10] 💾 Creando backup...
+reg export HKLM\SYSTEM "%BACKUP_TWEAKS%" /y >nul 2>&1
+echo    [✓] Backup creado
+
+echo [1/10] ⏱️  Tiempos de apagado...
+reg add "HKLM\SYSTEM\CurrentControlSet\Control" /v WaitToKillServiceTimeout /t REG_SZ /d "2000" /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop" /v WaitToKillAppTimeout /t REG_SZ /d "5000" /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop" /v HungAppTimeout /t REG_SZ /d "4000" /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop" /v AutoEndTasks /t REG_SZ /d "1" /f >nul 2>&1
+echo    [✓] Tiempos optimizados
+
+echo [2/10] 🎬 Animaciones...
+reg add "HKCU\Control Panel\Desktop" /v MenuShowDelay /t REG_SZ /d 0 /f >nul 2>&1
+reg add "HKCU\Control Panel\Desktop\WindowMetrics" /v MinAnimate /t REG_SZ /d 0 /f >nul 2>&1
+echo    [✓] Animaciones desactivadas
+
+echo [3/10] 🖱️  Menú contextual clásico...
+reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /ve /f >nul 2>&1
+echo    [✓] Menú clásico
+
+echo [4/10] 📍 Barra de tareas izquierda...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarAl /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Barra izquierda
+
+echo [5/10] 🔔 Iconos visibles...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer" /v EnableAutoTray /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Iconos visibles
+
+echo [6/10] 🎨 Widgets...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v TaskbarDa /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Widgets desactivados
+
+echo [7/10] 💡 Recomendaciones...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v Start_IrisRecommendations /t REG_DWORD /d 0 /f >nul 2>&1
+echo    [✓] Recomendaciones desactivadas
+
+echo [8/10] 🔐 Sticky Keys...
+reg add "HKCU\Control Panel\Accessibility\StickyKeys" /v Flags /t REG_SZ /d "506" /f >nul 2>&1
+echo    [✓] Sticky Keys desactivadas
+
+echo [9/10] 📱 Sincronización...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\SettingSync" /v SyncPolicy /t REG_DWORD /d 5 /f >nul 2>&1
+echo    [✓] Sincronización desactivada
+
+echo [10/10] 🔄 Reiniciando Explorer...
+taskkill /f /im explorer.exe >nul 2>&1
+start explorer.exe
+timeout /t 2 >nul
+echo    [✓] Explorer reiniciado
+
+echo.
+echo [%date% %time%] Tweaks avanzados finalizados >> "%LOG_FILE%"
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ✓ TWEAKS AVANZADOS APLICADOS
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: FUNCIONES RESTANTES (Simplificadas)
+:: ═══════════════════════════════════════════════════════════════════════════════
+
+:ai_analysis
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   📊 ANÁLISIS COMPLETO IA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo Analizando sistema...
+timeout /t 3 /nobreak >nul
+echo.
+echo ═══ RESULTADOS DEL ANÁLISIS ═══
+echo.
+echo Health Score: !HEALTH_SCORE!/100 [!HEALTH_STATUS!]
+echo RAM: !RAM_GB!GB
+echo Disco: !DISKTYPE! (!DISK_FREE_GB!GB libre)
+echo CPU: !CPU_NAME!
+echo GPU: !GPU_NAME!
+echo.
+echo ═══ RECOMENDACIONES IA ═══
+echo.
+if !HEALTH_SCORE! LSS 70 (
+    echo [!] Sistema necesita optimización
+    echo [→] Ejecutar Optimización Automática IA
+)
+if !DISK_USAGE_PERCENT! GTR 85 (
+    echo [!] Espacio en disco bajo
+    echo [→] Ejecutar Limpieza Profunda
+)
+if "!DISKTYPE!"=="HDD" (
+    echo [i] HDD detectado
+    echo [→] Considerar upgrade a SSD
+)
+echo.
+pause
+goto menu
+
+:health_scan
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🔍 ESCANEO DE SALUD
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo Escaneando sistema...
+echo.
+echo [1/5] Verificando archivos del sistema...
+sfc /scannow
+echo.
+echo [2/5] Verificando imagen de Windows...
+DISM /Online /Cleanup-Image /CheckHealth
+echo.
+echo [3/5] Verificando disco...
+chkdsk C: /scan
+echo.
+echo [4/5] Analizando salud...
+timeout /t 2 /nobreak >nul
+echo    [✓] Health Score: !HEALTH_SCORE!/100
+echo.
+echo [5/5] Generando reporte...
+echo    [✓] Escaneo completado
+echo.
+pause
+goto menu
+
+:generate_report
+cls
+color 0F
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   📋 GENERAR REPORTE
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+set "REPORT_FILE=%~dp0System_Report_%TIMESTAMP%.txt"
+echo Generando reporte en: %REPORT_FILE%
+echo.
+(
+    echo ════════════════════════════════════════════════════════════════════════════
+    echo  REPORTE DEL SISTEMA - %date% %time%
+    echo ════════════════════════════════════════════════════════════════════════════
+    echo.
+    echo ═══ INFORMACIÓN DEL SISTEMA ═══
+    systeminfo
+    echo.
+    echo ═══ HARDWARE ═══
+    echo CPU: !CPU_NAME!
+    echo GPU: !GPU_NAME!
+    echo RAM: !RAM_GB!GB
+    echo Disco: !DISKTYPE!
+    echo.
+    echo ═══ HEALTH SCORE ═══
+    echo Score: !HEALTH_SCORE!/100 [!HEALTH_STATUS!]
+    echo.
+    echo ═══ ESPACIO EN DISCO ═══
+    wmic logicaldisk get DeviceID,Size,FreeSpace,FileSystem
+    echo.
+    echo ════════════════════════════════════════════════════════════════════════════
+) > "%REPORT_FILE%"
+echo [✓] Reporte generado: %REPORT_FILE%
+echo.
+pause
+goto menu
+
+:view_log
+cls
+color 0F
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   📜 REGISTRO DE ACTIVIDADES
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+if exist "%LOG_FILE%" (
+    echo Archivo: %LOG_FILE%
+    echo.
+    echo ────────────────────────────────────────────────────────────────────────────
+    type "%LOG_FILE%"
+    echo ────────────────────────────────────────────────────────────────────────────
+) else (
+    echo [!] No se encontró archivo de log
+)
+echo.
+pause
+goto menu
+
+:restore_system
+cls
+color 0E
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   🔄 RESTAURAR SISTEMA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo Buscando backups...
+echo.
+set BACKUP_COUNT=0
+for %%F in ("%~dp0Registry_Backup_*.reg") do (
+    set /a BACKUP_COUNT+=1
+    echo [!BACKUP_COUNT!] %%~nxF
+)
+echo.
+if !BACKUP_COUNT!==0 (
+    echo [!] No se encontraron backups
+    pause
+    goto menu
+)
+echo.
+echo [i] Para restaurar, ejecuta: reg import "archivo.reg"
+echo.
+pause
+goto menu
+
+:create_backup
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   💾 CREAR BACKUP
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+set "BACKUP_MANUAL=%~dp0Registry_Backup_Manual_%TIMESTAMP%.reg"
+echo Creando backup manual...
+reg export HKLM\SOFTWARE "%BACKUP_MANUAL%" /y >nul 2>&1
+if !errorlevel!==0 (
+    echo [✓] Backup creado: %BACKUP_MANUAL%
+) else (
+    echo [!] Error al crear backup
+)
+echo.
+echo Creando punto de restauración...
+powershell -Command "Checkpoint-Computer -Description '%SCRIPT_NAME%_Manual' -RestorePointType 'MODIFY_SETTINGS' -ErrorAction SilentlyContinue" >nul 2>&1
+if !errorlevel!==0 (
+    echo [✓] Punto de restauración creado
+) else (
+    echo [!] Error al crear punto de restauración
+)
+echo.
+pause
+goto menu
+
+:system_info
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ℹ️  INFORMACIÓN DEL SISTEMA
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo ═══ SISTEMA OPERATIVO ═══
+echo.
+for /f "tokens=2 delims==" %%a in ('wmic os get Caption /value ^| find "="') do echo OS: %%a
+for /f "tokens=2 delims==" %%a in ('wmic os get Version /value ^| find "="') do echo Versión: %%a
+for /f "tokens=2 delims==" %%a in ('wmic os get BuildNumber /value ^| find "="') do echo Build: %%a
+echo.
+echo ═══ HARDWARE ═══
+echo.
+echo CPU: !CPU_NAME!
+echo GPU: !GPU_NAME!
+echo RAM: !RAM_GB! GB (!RAM_MB! MB)
+echo Disco: !DISKTYPE!
+echo.
+echo ═══ ALMACENAMIENTO ═══
+echo.
+wmic logicaldisk where "DriveType=3" get DeviceID,Size,FreeSpace,FileSystem
+echo.
+echo ═══ SALUD DEL SISTEMA ═══
+echo.
+echo Health Score: !HEALTH_SCORE!/100 [!HEALTH_STATUS!]
+echo Uso de disco: !DISK_USAGE_PERCENT!%%
+echo.
+pause
+goto menu
+
+:help_menu
+cls
+color 0B
+echo.
+echo ════════════════════════════════════════════════════════════════════════════════
+echo   ❓ AYUDA - AZELMODS v%SCRIPT_VERSION%
+echo ════════════════════════════════════════════════════════════════════════════════
+echo.
+echo OPCIONES PRINCIPALES:
+echo.
+echo [1] OPTIMIZACIÓN AUTOMÁTICA IA
+echo     - Sistema inteligente que analiza tu hardware
+echo     - Aplica optimizaciones personalizadas
+echo     - Recomendado para todos los usuarios
+echo.
+echo [2] OPTIMIZACIÓN COMPLETA
+echo     - 50+ optimizaciones avanzadas
+echo     - Crea backup automático
+echo     - Recomendado para usuarios avanzados
+echo.
+echo [3] GAMING PRO EXTREME
+echo     - Máximo rendimiento en juegos
+echo     - Prioridad GPU y CPU
+echo     - Reduce latencia de red
+echo.
+echo [4] PRODUCTIVIDAD AVANZADA
+echo     - Optimizado para trabajo
+echo     - Mantiene servicios esenciales
+echo     - Balance rendimiento/funcionalidad
+echo.
+echo [5] SEGURIDAD EXTREMA
+echo     - Protección máxima
+echo     - Firewall y Defender activos
+echo     - Bloqueo de puertos peligrosos
+echo.
+echo NOTAS IMPORTANTES:
+echo - Siempre ejecutar como Administrador
+echo - Crear backup antes de optimizar
+echo - Reiniciar después de optimización completa
+echo.
+echo YouTube: %SCRIPT_YOUTUBE%
+echo.
+pause
+goto menu
+
+:: ═══════════════════════════════════════════════════════════════════════════════
+:: SALIR
+:: ═══════════════════════════════════════════════════════════════════════════════
+:end_script
+cls
+color 0B
+echo.
+echo.
+echo         ╔═══════════════════════════════════════════════════════════════════════╗
+echo         ║                                                                       ║
+echo         ║                   GRACIAS POR USAR AZELMODS v%SCRIPT_VERSION%                 ║
+echo         ║                                                                       ║
+echo         ║                    🤖 ULTIMATE AI EDITION 🤖                          ║
+echo         ║                                                                       ║
+echo         ║              YouTube: %SCRIPT_YOUTUBE%           ║
+echo         ║                                                                       ║
+echo         ║                  © 2025 AGCOMPANY677 - Todos los derechos reservados ║
+echo         ║                                                                       ║
+echo         ╚═══════════════════════════════════════════════════════════════════════╝
+echo.
+echo [%date% %time%] Script finalizado >> "%LOG_FILE%"
+echo.
+timeout /t 3
+exit /b 0

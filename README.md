@@ -279,7 +279,7 @@
 ║ 📜 SECCIÓN LEGAL - TÉRMINOS Y CONDICIONES                                  ║
 ╠══════════════════════════════════════════════════════════════════════════════╣
 ║                                                                              ║
-║  LICENCIA: Propietaria - Todos los derechos reservados © 2024 AGCOMPANY677  ║
+║  LICENCIA: Propietaria - Todos los derechos reservados © 2026 AGCOMPANY677  ║
 ║                                                                              ║
 ║  PERMISOS OTORGADOS:                                                         ║
 ║  ✅ Uso personal ilimitado                                                  ║

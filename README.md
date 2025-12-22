@@ -36,7 +36,7 @@
 ║                                                                              ║
 ║  Q: ¿Quién desarrolla?                                                       ║
 ║  A: AGCOMPANY677                                                             ║
-║     📺 YouTube: @AGCOMPANY677                                               ║
+║     📺 YouTube: [@AGCOMPANY677 ](https://www.youtube.com/@AGCOMPANY677)                                              ║
 ║     💻 GitHub: AGCOMPANY677/AzelMods                                        ║
 ║                                                                              ║
 ║  Q: ¿Frecuencia de actualizaciones?                                          ║

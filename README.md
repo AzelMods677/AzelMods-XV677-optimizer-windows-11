@@ -392,7 +392,7 @@
 ║                                                                              ║
 ║              PARA MÁS INFORMACIÓN: @AGCOMPANY677 (YouTube)                 ║
 ║                                                                              ║
-║                     © 2024 AGCOMPANY677 - TODOS LOS DERECHOS RESERVADOS      ║
+║                     © 2025 AGCOMPANY677 - TODOS LOS DERECHOS RESERVADOS      ║
 ║                                                                              ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
 ```
